@@ -26,13 +26,13 @@
 
 
 
-*The coroutines themselves are switch-case automata wrapped in macros. Each interrupt call inserts a new case label into the code, to which it then returns after the interrupt.
+*The coroutines themselves are switch-case automata wrapped in macros. Each interrupt call inserts a new case label into the code, to which it then returns after the interrupt.*
 
-And all this is packed into literally 100 lines in the oldest language that does not know stl.*
+*And all this is packed into literally 100 lines in the oldest language that does not know stl.*
 
 
 **Example of usage:**
-```
+```C
 #include "coroutine.h"
 
 #include <stdio.h>
