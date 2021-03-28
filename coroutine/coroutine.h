@@ -25,6 +25,11 @@ static struct coroutine root_coroutine = {COROUTINE_ROOT, NULL, NULL, NULL};
 		{COROUTINE_BEGIN, coroutine_func_##name, NULL, NULL};	\
 	void coroutine_func_##name(struct coroutine *self)		\
 	{								\
+		enum {							\
+			CASE_LABEL_OFFSET = 				\
+			((__COUNTER__ + 1) / 2) + COROUTINE_ROOT	\
+		};							\
+									\
 		switch(name.state) {					\
 		case COROUTINE_BEGIN:					\
 			body						\
@@ -71,19 +76,20 @@ void reset_coroutine(struct coroutine *target)
 	target->state = COROUTINE_BEGIN;
 }
 
-#define interrupt_coroutine						\
+#define interrupt_coroutine {						\
+									\
 		self->state =						\
-			COROUTINE_ROOT + ((__COUNTER__ + 1) / 2);	\
+			((__COUNTER__ + 1) / 2) - CASE_LABEL_OFFSET;	\
 			return;						\
-		case COROUTINE_ROOT + ((__COUNTER__ + 1) / 2) - 1:
+		case ((__COUNTER__ + 1) / 2) - CASE_LABEL_OFFSET - 1:;	\
+}
 
 #define delay_coroutine(value) {					\
 	static clock_t delay;						\
 	delay = millis;							\
 									\
-	while (millis - delay < value) {				\
+	while (millis - delay < value)					\
 		interrupt_coroutine;					\
-	}								\
 }
 	
 void update_coroutines()
