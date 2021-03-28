@@ -1,6 +1,5 @@
-#include "coroutine.h"
-
 #include <stdio.h>
+#include "coroutine.h"
 
 define_coroutine(async_counter1,
 {

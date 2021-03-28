@@ -15,7 +15,7 @@ struct coroutine {
 static struct coroutine root_coroutine = {COROUTINE_BEGIN, NULL, NULL, NULL};
 
 #define define_coroutine(name, body)					\
-	void coroutine_func_##name(struct coroutine *self);		\
+	void coroutine_func_##name(struct coroutine *);			\
 									\
 	static struct coroutine name =					\
 		{COROUTINE_BEGIN, coroutine_func_##name, NULL, NULL};	\
@@ -23,7 +23,7 @@ static struct coroutine root_coroutine = {COROUTINE_BEGIN, NULL, NULL, NULL};
 	{								\
 		enum {LAST_COUNTER = __COUNTER__ + COROUTINE_END};	\
 									\
-		switch(name.state) {					\
+		switch(self->state) {					\
 		case COROUTINE_BEGIN:					\
 			body						\
 									\

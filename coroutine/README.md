@@ -2,27 +2,27 @@
 
 **This is minimal (under 100 lines of code), non-reenterant, coroutine implementation on ANSI C language.**
 
-- Coroutines are a double-linked list.
+- Coroutines are a double-linked list;
 
-- You can define the function of a coroutine using **define_coroutine**
+- You can define the function of a coroutine using **define_coroutine**;
 
-- Add a new coroutine to a linked list with **insert_coroutine**
+- Add a new coroutine to a linked list with **insert_coroutine**;
 
-- Remove with: **remove_coroutine**
+- Remove with: **remove_coroutine**;
 
-- All operations are performed in a constant amount of time.
+- All operations are performed in a constant amount of time;
 
-- You can interrupt execution of a coroutine and start execution of another one with **interrupt_coroutine**
+- You can interrupt execution of a coroutine and start execution of another one with **interrupt_coroutine**;
 
-- The function **delay_coroutine** interrupts execution of the coroutine until a certain time
+- The function **delay_coroutine** interrupts execution of the coroutine until a certain time;
 
-- The function **suspend_coroutine** removes the coroutine from the list, while preserving the state of the coroutine.
+- The function **suspend_coroutine** removes the coroutine from the list, while preserving the state of the coroutine;
 
-- The **resume_coroutine** function inserts the coroutine back in.
+- The **resume_coroutine** function inserts the coroutine back in;
 
-- The function **reset_coroutine** resets the state of the coroutine to its original state
+- The function **reset_coroutine** resets the state of the coroutine to its original state;
 
-- The function **update_coroutines** goes through the entire list of coroutines and executes them.
+- The function **update_coroutines** goes through the entire list of coroutines and executes them;
 
 
 
@@ -33,17 +33,17 @@
 
 **Example of usage:**
 ```C
+#include <stdio.h>
 #include "coroutine.h"
 
-#include <stdio.h>
 define_coroutine(async_counter,
 {
 	static int i = 0;
 	
 	while (1) {	
-		delay_coroutine(1000);
 		printf("async counter: %i\n", i++);
 		fflush(NULL);
+		delay_coroutine(1000);
 	}
 })
 
