@@ -1,30 +1,41 @@
 #include "coroutine.h"
 
 #include <stdio.h>
-define_coroutine(async_counter,
+
+define_coroutine(async_counter1,
 {
 	static int i = 0;
+	static int delay = 1337;
 	
-	while (1) {	
-		delay_coroutine(1000);
-		printf("async counter: %i\n", i++);
-		interrupt_coroutine;
-		printf("1: %i\n", i++);
-		interrupt_coroutine;
-		printf("2: %i\n", i++);
-		interrupt_coroutine;
-		printf("3: %i\n", i++);
-		interrupt_coroutine;
-		printf("4: %i\n", i++);
+	while (1) {
+		if (delay >= 232)
+			delay -= 100;
+		else
+			delay = 1337;
+			
+		printf("@@@@@@@@@@ ASYNC COUNTER1 @@@@@@@@@@: %i\n", i++);
+		fflush(NULL);
+		delay_coroutine(delay);
+	}
+})
+
+define_coroutine(async_counter2,
+{
+	static int i = 0;
+
+	while (1) {
+		printf("__________ ASYNC COUNTER2 __________: %i\n", i++);
 		interrupt_coroutine;
 		fflush(NULL);
+		delay_coroutine(232);
 	}
 })
 
 int main()
 {
-	insert_coroutine(&async_counter);
-	
+	insert_coroutine(&async_counter1);
+	insert_coroutine(&async_counter2);
+
 	while (1) {
 		update_coroutines();
 	}

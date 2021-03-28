@@ -3,11 +3,7 @@
 
 static clock_t millis;
 
-enum coroutine_state {
-	COROUTINE_BEGIN,
-	COROUTINE_END,
-	COROUTINE_ROOT
-};
+enum {COROUTINE_BEGIN, COROUTINE_END};
 
 struct coroutine {
 	int state;
@@ -16,7 +12,7 @@ struct coroutine {
 	struct coroutine *next;
 };
 
-static struct coroutine root_coroutine = {COROUTINE_ROOT, NULL, NULL, NULL};
+static struct coroutine root_coroutine = {COROUTINE_BEGIN, NULL, NULL, NULL};
 
 #define define_coroutine(name, body)					\
 	void coroutine_func_##name(struct coroutine *self);		\
@@ -25,19 +21,18 @@ static struct coroutine root_coroutine = {COROUTINE_ROOT, NULL, NULL, NULL};
 		{COROUTINE_BEGIN, coroutine_func_##name, NULL, NULL};	\
 	void coroutine_func_##name(struct coroutine *self)		\
 	{								\
-		enum {							\
-			CASE_LABEL_OFFSET = 				\
-			((__COUNTER__ + 1) / 2) + COROUTINE_ROOT	\
-		};							\
+		enum {LAST_COUNTER = __COUNTER__ + COROUTINE_END};	\
 									\
 		switch(name.state) {					\
 		case COROUTINE_BEGIN:					\
 			body						\
 									\
+		case COROUTINE_END:					\
 		default:						\
 			break;						\
 		}							\
-		name.state = COROUTINE_END;				\
+									\
+		self->state = COROUTINE_END;				\
 	}
 
 void insert_coroutine(struct coroutine *target)
@@ -77,18 +72,17 @@ void reset_coroutine(struct coroutine *target)
 }
 
 #define interrupt_coroutine {						\
-									\
-		self->state =						\
-			((__COUNTER__ + 1) / 2) - CASE_LABEL_OFFSET;	\
-			return;						\
-		case ((__COUNTER__ + 1) / 2) - CASE_LABEL_OFFSET - 1:;	\
+		enum {GENERATED_CASE = LAST_COUNTER - __COUNTER__};	\
+		self->state = GENERATED_CASE;				\
+		return;							\
+		case GENERATED_CASE:;					\
 }
 
 #define delay_coroutine(value) {					\
-	static clock_t delay;						\
-	delay = millis;							\
+	static clock_t _delay;						\
+	_delay = millis;						\
 									\
-	while (millis - delay < value)					\
+	while (millis - _delay < value)					\
 		interrupt_coroutine;					\
 }
 	
