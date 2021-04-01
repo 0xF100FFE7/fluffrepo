@@ -1,6 +1,6 @@
 # C89 coroutines
 
-**This is minimal (under 100 lines of code), non-reenterant, coroutine implementation on ANSI C language.**
+**This is minimal (under 150 lines of code), non-reenterant, coroutine implementation on ANSI C language.**
 
 - Coroutines are a double-linked list;
 

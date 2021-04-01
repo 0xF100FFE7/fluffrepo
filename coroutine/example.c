@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "coroutine.h"
 
-define_coroutine(async_counter1,
+DEFINE_COROUTINE(async_counter1,
 {
 	static int i = 0;
 	static int delay = 1337;
@@ -14,19 +14,19 @@ define_coroutine(async_counter1,
 			
 		printf("@@@@@@@@@@ ASYNC COUNTER1 @@@@@@@@@@: %i\n", i++);
 		fflush(NULL);
-		delay_coroutine(delay);
+		DELAY_COROUTINE(delay);
 	}
 })
 
-define_coroutine(async_counter2,
+DEFINE_COROUTINE(async_counter2,
 {
 	static int i = 0;
 
 	while (1) {
 		printf("__________ ASYNC COUNTER2 __________: %i\n", i++);
-		interrupt_coroutine;
+		YIELD_COROUTINE;
 		fflush(NULL);
-		delay_coroutine(232);
+		DELAY_COROUTINE(232);
 	}
 })
 
