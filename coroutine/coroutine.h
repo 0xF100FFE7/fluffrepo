@@ -17,6 +17,9 @@ enum coroutine_states {COROUTINE_BEGIN, COROUTINE_END};
 struct coroutine {
 	int state;
 	
+	/* required for DELAY_COROUTINE*/
+	clock_t delay;
+	
 	/* Pointer to coroutine function */
 	void (*func)(struct coroutine *);
 	
@@ -25,7 +28,8 @@ struct coroutine {
 };
 
 /* Head node of the list. Not used as actual coroutine */
-static struct coroutine root_coroutine = {COROUTINE_BEGIN, NULL, NULL, NULL};
+static struct coroutine root_coroutine = 
+	{COROUTINE_BEGIN, 0, NULL, NULL, NULL};
 
 #define DEFINE_COROUTINE(name, body)					\
 	/* prototype of coroutine function */				\
@@ -33,7 +37,7 @@ static struct coroutine root_coroutine = {COROUTINE_BEGIN, NULL, NULL, NULL};
 									\
 	/* new coroutine initializes with pointer to that function */	\
 	static struct coroutine name =					\
-		{COROUTINE_BEGIN, coroutine_func_##name, NULL, NULL};	\
+		{COROUTINE_BEGIN, 0, coroutine_func_##name, NULL, NULL};\
 									\
 	/* actual definition */						\
 	void coroutine_func_##name(struct coroutine *self)		\
@@ -119,10 +123,9 @@ void resume_coroutine(struct coroutine *target)
 }
 
 #define DELAY_COROUTINE(value) {					\
-	static clock_t _delay;						\
-	_delay = millis;						\
+	self->delay = millis;						\
 									\
-	while (millis - _delay < value)					\
+	while (millis - self->delay < value)				\
 		YIELD_COROUTINE;					\
 }
 
